@@ -1,6 +1,16 @@
 locals {
 }
 
+variable "inwx_user" {
+  type = string
+}
+variable "inwx_pass" {
+  type = string
+}
+variable "inwx_email" {
+  type = string
+}
+
 module "kube-hetzner" {
   providers = {
     hcloud = hcloud
@@ -345,7 +355,7 @@ module "kube-hetzner" {
   # traefik_additional_ports = [{name = "example", port = 1234, exposedPort = 1234}]
 
   # If you want to disable the metric server set this to "false". Default is "true".
-  # enable_metrics_server = false
+  enable_metrics_server = true
 
   # If you want to allow non-control-plane workloads to run on the control-plane nodes, set this to "true". The default is "false".
   # True by default for single node clusters, and when enable_klipper_metal_lb is true. In those cases, the value below will be ignored.
@@ -581,7 +591,11 @@ module "kube-hetzner" {
   # extra_kustomize_deployment_commands=""
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-  # extra_kustomize_parameters={}
+  extra_kustomize_parameters={
+    inwx_email: var.inwx_email,
+    inwx_user: var.inwx_user,
+    inwx_pass: var.inwx_pass,
+  }
 
   # See an working example for just a manifest.yaml, a HelmChart and a HelmChartConfig examples/kustomization_user_deploy/README.md
   
