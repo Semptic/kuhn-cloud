@@ -2,7 +2,7 @@
 secrets.tfvars
 
 # Exclude kubeconfig
-kubeconfig.yaml
+*kubeconfig.yaml
 
 # Local .terraform directories
 **/.terraform/*
