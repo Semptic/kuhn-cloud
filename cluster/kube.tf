@@ -1,16 +1,3 @@
-locals {
-}
-
-variable "inwx_user" {
-  type = string
-}
-variable "inwx_pass" {
-  type = string
-}
-variable "inwx_email" {
-  type = string
-}
-
 module "kube-hetzner" {
   providers = {
     hcloud = hcloud
@@ -68,7 +55,7 @@ module "kube-hetzner" {
   # This is due to the creation of a subnet for each nodepool with CIDRs being in the shape of 10.[nodepool-index].0.0/16 which collides with k3s' cluster and service IP ranges (defaults below).
   # Furthermore the maximum number of nodepools (controlplane and agent) is 50, due to a hard limit of 50 subnets per network, see https://docs.hetzner.com/cloud/networks/faq/.
   # So to be able to create a maximum of 50 nodepools in total, the values below have to be changed to something outside that range, e.g. `10.200.0.0/16` and `10.201.0.0/16` for cluster and service respectively.
-  
+
   # If you must change the cluster CIDR you can do so below, but it is highly advised against.
   # The cluster CIDR must be a part of the network CIDR!
   # cluster_ipv4_cidr = "10.42.0.0/16"
@@ -188,7 +175,7 @@ module "kube-hetzner" {
   ### The following values are entirely optional (and can be removed from this if unused)
 
   # You can refine a base domain name to be use in this form of nodename.base_domain for setting the reserve dns inside Hetzner
-  # base_domain = "mycluster.example.com"
+  # base_domain = "k8s.kuhn.cloud"
 
   # Cluster Autoscaler
   # Providing at least one map for the array enables the cluster autoscaler feature, default is disabled
@@ -476,7 +463,7 @@ module "kube-hetzner" {
 
   # You can choose the version of Cilium that you want. By default we keep the version up to date and configure Cilium with compatible settings according to the version.
   # cilium_version = "v1.14.0"
-  
+
   # Set native-routing mode ("native") or tunneling mode ("tunnel"). Default: tunnel
   # cilium_routing_mode = "native"
 
@@ -591,19 +578,21 @@ module "kube-hetzner" {
   # extra_kustomize_deployment_commands=""
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-  extra_kustomize_parameters={
-    inwx_email: var.inwx_email,
-    inwx_user: var.inwx_user,
-    inwx_pass: var.inwx_pass,
+  extra_kustomize_parameters = {
+    inwx_email : var.inwx_email,
+    inwx_user : var.inwx_user,
+    inwx_pass : var.inwx_pass,
+    smb_user : var.smb_user,
+    smb_pass : var.smb_pass,
   }
 
   # See an working example for just a manifest.yaml, a HelmChart and a HelmChartConfig examples/kustomization_user_deploy/README.md
-  
+
   # It is best practice to turn this off, but for backwards compatibility it is set to "true" by default.
   # See https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/issues/349
   # When "false". The kubeconfig file can instead be created by executing: "terraform output --raw kubeconfig > cluster_kubeconfig.yaml"
   # Always be careful to not commit this file!
-  # create_kubeconfig = false
+  create_kubeconfig = true
 
   # Don't create the kustomize backup. This can be helpful for automation.
   # create_kustomization = false
@@ -767,9 +756,33 @@ bootstrapPassword: "supermario"
 
 }
 
+resource "inwx_nameserver_record" "k8s_example_com_A" {
+  # module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] is true if we are not using the hetzner loadbalancer
+  count = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? length(module.kube-hetzner.control_planes_public_ipv4) : 1
+  domain  = "kuhn.cloud"
+  name    = "k8s"
+  type    = "A"
+  content = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4[count.index] : module.kube-hetzner.ingress_public_ipv4
+}
+
+resource "inwx_nameserver_record" "k8s_example_com_AAAA" {
+  count   = module.kube-hetzner.ingress_public_ipv6 != null ? 1 : 0
+  domain  = "kuhn.cloud"
+  name    = "k8s"
+  type    = "AAAA"
+  content = module.kube-hetzner.ingress_public_ipv6
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
+
+provider "inwx" {
+  api_url  = "https://api.domrobot.com/jsonrpc/"
+  username = var.inwx_user
+  password = var.inwx_pass
+}
+
 
 terraform {
   required_version = ">= 1.4.0"
@@ -777,6 +790,10 @@ terraform {
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = ">= 1.41.0"
+    }
+    inwx = {
+      source  = "inwx/inwx"
+      version = ">= 1.0.0"
     }
   }
 }
@@ -787,6 +804,25 @@ output "kubeconfig" {
 }
 
 variable "hcloud_token" {
+  type      = string
   sensitive = true
-  default   = ""
+}
+
+variable "inwx_user" {
+  type = string
+}
+variable "inwx_pass" {
+  type      = string
+  sensitive = true
+}
+variable "inwx_email" {
+  type = string
+}
+
+variable "smb_user" {
+  type = string
+}
+variable "smb_pass" {
+  type      = string
+  sensitive = true
 }

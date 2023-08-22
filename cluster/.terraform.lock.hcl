@@ -122,6 +122,24 @@ provider "registry.terraform.io/integrations/github" {
   ]
 }
 
+provider "registry.terraform.io/inwx/inwx" {
+  version     = "1.3.0"
+  constraints = ">= 1.0.0"
+  hashes = [
+    "h1:hLyhVGOqOlXa8m0lVs35gIFsl66yPgZ5iR+oJNUuidw=",
+    "zh:08e3f77b433e40b0ad541fc644d63e9ea6482a6e5a123ecf7a4eeb837647ed7d",
+    "zh:0aaf1414621f85b366579c0065519c0ae178baea29bd07e343f45f0e43426290",
+    "zh:4748bd490e5452b3e242745f1cba4e0b2d6fbb69c4a2847dbe19c810e5f645c5",
+    "zh:6515780c44d4723f1efafccdd3b146ed37d10929ae8f3ed81e4c1738b087b8c9",
+    "zh:6e97e130e9d7c1ca99c00a2c79068e0b8e0add88ef742c93d8457586de0f3063",
+    "zh:83941d05fb8b41bbf2ca2b52031fcfd4762f20665e133dc07a3d524d5d502039",
+    "zh:94d27bcd1d7ad42425f47e8cf71a4895081ed7db5cc38cbfb39b147f72f5cdc8",
+    "zh:be44d5801126fa2db204afe070293f6cb8fbcc38be8ae376705ddae3ee622bea",
+    "zh:c3920903097e5072b6e8f61c2abbc1f178810fcfcb1217a20966a31a6502aa83",
+    "zh:fd0b79d93c095b2ca7876d19dc133feff88c66ee9c29d028da4b6e7f17de2b64",
+  ]
+}
+
 provider "registry.terraform.io/tenstad/remote" {
   version     = "0.1.2"
   constraints = ">= 0.0.23"

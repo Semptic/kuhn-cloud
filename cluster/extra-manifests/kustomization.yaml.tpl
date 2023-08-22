@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - cert-manager-webhook-inwx.yaml
+  - smb-storage-box.yaml
