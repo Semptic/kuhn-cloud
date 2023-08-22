@@ -1,3 +1,19 @@
+locals {
+  control_plane_nodepools = [
+    {
+      name        = "control-plane-fsn1",
+      server_type = "cax11",
+      location    = "fsn1",
+      labels      = [],
+      taints      = [],
+      count       = 3
+
+      # Enable automatic backups via Hetzner (default: false)
+      # backups = true
+    },
+  ]
+
+}
 module "kube-hetzner" {
   providers = {
     hcloud = hcloud
@@ -91,19 +107,7 @@ module "kube-hetzner" {
 
   # * Example below:
 
-  control_plane_nodepools = [
-    {
-      name        = "control-plane-fsn1",
-      server_type = "cax11",
-      location    = "fsn1",
-      labels      = [],
-      taints      = [],
-      count       = 3
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-    },
-  ]
+  control_plane_nodepools = local.control_plane_nodepools
 
   agent_nodepools = [
     {
@@ -753,36 +757,7 @@ hostname: "rancher.example.com"
 replicas: 1
 bootstrapPassword: "supermario"
   EOT */
-
 }
-
-resource "inwx_nameserver_record" "k8s_example_com_A" {
-  # module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] is true if we are not using the hetzner loadbalancer
-  count = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? length(module.kube-hetzner.control_planes_public_ipv4) : 1
-  domain  = "kuhn.cloud"
-  name    = "k8s"
-  type    = "A"
-  content = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4[count.index] : module.kube-hetzner.ingress_public_ipv4
-}
-
-resource "inwx_nameserver_record" "k8s_example_com_AAAA" {
-  count   = module.kube-hetzner.ingress_public_ipv6 != null ? 1 : 0
-  domain  = "kuhn.cloud"
-  name    = "k8s"
-  type    = "AAAA"
-  content = module.kube-hetzner.ingress_public_ipv6
-}
-
-provider "hcloud" {
-  token = var.hcloud_token
-}
-
-provider "inwx" {
-  api_url  = "https://api.domrobot.com/jsonrpc/"
-  username = var.inwx_user
-  password = var.inwx_pass
-}
-
 
 terraform {
   required_version = ">= 1.4.0"
@@ -790,10 +765,6 @@ terraform {
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = ">= 1.41.0"
-    }
-    inwx = {
-      source  = "inwx/inwx"
-      version = ">= 1.0.0"
     }
   }
 }
@@ -803,10 +774,23 @@ output "kubeconfig" {
   sensitive = true
 }
 
+output "num_control_plane_nodes" {
+  value = sum([for pool in local.control_plane_nodepools: pool.count])
+  
+}
+output "ingress_public_ipv4" {
+  value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [ module.kube-hetzner.ingress_public_ipv4 ]
+}
+
+output "ingress_public_ipv6" {
+  value = module.kube-hetzner.ingress_public_ipv6 == null ? [] : [ module.kube-hetzner.ingress_public_ipv6 ] 
+}
+
 variable "hcloud_token" {
   type      = string
   sensitive = true
 }
+
 
 variable "inwx_user" {
   type = string
