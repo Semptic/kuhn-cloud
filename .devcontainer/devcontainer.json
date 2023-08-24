@@ -8,6 +8,9 @@
   "runArgs": [
     "--init"
   ],
+  "containerEnv": {
+    "KUBECONFIG": "/workspaces/kuhn-cloud-k8s/k3s_kubeconfig.yaml"
+  },
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers-contrib/features/packer-asdf:2": {},
