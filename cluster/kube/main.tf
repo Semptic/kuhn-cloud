@@ -4,7 +4,7 @@ locals {
       name        = "control-plane-fsn1",
       server_type = "cax11",
       location    = "fsn1",
-      labels      = [],
+      labels      = [ "svccontroller.k3s.cattle.io/enablelb=true" ],
       taints      = [],
       count       = 3
 
@@ -116,7 +116,7 @@ module "kube-hetzner" {
       location    = "fsn1",
       labels      = [],
       taints      = [],
-      count       = 1
+      count       = 0
 
       # Enable automatic backups via Hetzner (default: false)
       # backups = true
@@ -155,8 +155,8 @@ module "kube-hetzner" {
   # enable_wireguard = true
 
   # * LB location and type, the latter will depend on how much load you want it to handle, see https://www.hetzner.com/cloud/load-balancer
-  load_balancer_type     = "lb11"
-  load_balancer_location = "fsn1"
+  # load_balancer_type     = "lb11"
+  # load_balancer_location = "fsn1"
 
   # Disable IPv6 for the load balancer, the default is false.
   # load_balancer_disable_ipv6 = true
@@ -189,15 +189,15 @@ module "kube-hetzner" {
   # Also, as mentioned above, for the time being ARM cax* instances are only available in fsn1.
   # If you are curious, it's ok to have a multi-architecture cluster, as most underlying container images are multi-architecture too.
   # * Example below:
-  # autoscaler_nodepools = [
-  #   {
-  #     name        = "autoscaled-small"
-  #     server_type = "cpx21"
-  #     location    = "fsn1"
-  #     min_nodes   = 0
-  #     max_nodes   = 5
-  #   }
-  # ]
+  autoscaler_nodepools = [
+    {
+      name        = "autoscaled-arm-small"
+      server_type = "cax11",
+      location    = "fsn1"
+      min_nodes   = 0
+      max_nodes   = 5
+    }
+  ]
 
   # Add extra labels on nodes started by the Cluster Autoscaler
   # This argument is not used if autoscaler_nodepools is not set, because the Cluster Autoscaler is installed only if autoscaler_nodepools is set
