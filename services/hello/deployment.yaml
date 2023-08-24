@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: the-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       deployment: hello
@@ -12,9 +12,22 @@ spec:
       labels:
         deployment: hello
     spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: hello
       containers:
       - name: the-container
         image: nginx
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: "512Mi"
+          requests:
+            memory: "512Mi"
         ports:
         - containerPort: 80
         env:
