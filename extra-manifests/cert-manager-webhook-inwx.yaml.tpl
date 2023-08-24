@@ -23,6 +23,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: inwx-credentials
+  namespace: cert-manager
 stringData:
   username: ${inwx_user}
   password: ${inwx_pass}
