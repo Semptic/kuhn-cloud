@@ -9,14 +9,12 @@
     "--init"
   ],
   "containerEnv": {
-    "KUBECONFIG": "/workspaces/kuhn-cloud-k8s/k3s_kubeconfig.yaml"
+    "KUBECONFIG": "/workspaces/kuhn-cloud/k3s_kubeconfig.yaml"
   },
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers-contrib/features/packer-asdf:2": {},
-    "ghcr.io/devcontainers-contrib/features/terraform-asdf:2": {},
-    "kubectl-helm-minikube": {},
-    "ghcr.io/joshuanianji/devcontainer-features/terraform-cli-persistence:0": {}
+    "kubectl-helm-minikube": {}
   },
   "customizations": {
     "vscode": {
