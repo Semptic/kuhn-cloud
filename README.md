@@ -23,13 +23,14 @@ packer build hcloud-microos-snapshots.pkr.hcl
 
 ## Run
 
+### OpenTofu
+
 ```
 tofu init --upgrade
 tofu validate
 tofu apply -auto-approve
 ```
 
-
-## kubectl
+### kubectl
 
 Get the config with `terraform output --raw kubeconfig > kubeconfig.yaml` and use it like `kubectl --kubeconfig kubeconfig.yaml ...`.
