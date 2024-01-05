@@ -1,4 +1,4 @@
-# kuhn-cloud-k8s
+# kuhn-cloud
 
 This uses [Kube-Hetzner](https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner) to setup the k8s cluster on hetzner cloud.
 
