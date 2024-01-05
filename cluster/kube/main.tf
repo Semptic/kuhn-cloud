@@ -20,6 +20,9 @@ module "kube-hetzner" {
   }
   hcloud_token = var.hcloud_token
 
+  # Fix "Waiting for the k3s server to start..." error on creation
+  postinstall_exec = ["restorecon -v /usr/local/bin/k3s"]
+
   # Then fill or edit the below values. Only the first values starting with a * are obligatory; the rest can remain with their default values, or you
   # could adapt them to your needs.
 
