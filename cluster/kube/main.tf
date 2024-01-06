@@ -104,19 +104,6 @@ module "kube-hetzner" {
   # If you want to allow all outbound traffic you can set this to "false". Default is "true".
   restrict_outbound_traffic = false
 
-  # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
-  extra_kustomize_parameters = {
-    inwx_email : var.inwx_email,
-    inwx_user : var.inwx_user,
-    inwx_pass : var.inwx_pass,
-    smb_user : var.smb_user,
-    smb_pass : var.smb_pass,
-    tailscale_client_id : var.tailscale_client_id,
-    tailscale_secret : var.tailscale_secret,
-  }
-
-  # See an working example for just a manifest.yaml, a HelmChart and a HelmChartConfig examples/kustomization_user_deploy/README.md
-
   # It is best practice to turn this off, but for backwards compatibility it is set to "true" by default.
   # See https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/issues/349
   # When "false". The kubeconfig file can instead be created by executing: "terraform output --raw kubeconfig > cluster_kubeconfig.yaml"
@@ -142,43 +129,11 @@ variable "hcloud_token" {
   sensitive = true
 }
 
-variable "inwx_user" {
-  type = string
-}
-variable "inwx_pass" {
-  type      = string
-  sensitive = true
-}
-variable "inwx_email" {
-  type = string
-}
-
-variable "smb_user" {
-  type = string
-}
-variable "smb_pass" {
-  type      = string
-  sensitive = true
-}
-
-variable "tailscale_client_id" {
-  type      = string
-  sensitive = true
-}
-variable "tailscale_secret" {
-  type      = string
-  sensitive = true
-}
-
 output "kubeconfig" {
   value     = module.kube-hetzner.kubeconfig
   sensitive = true
 }
 
-output "num_control_plane_nodes" {
-  value = sum([for pool in local.control_plane_nodepools : pool.count])
-
-}
 output "ingress_public_ipv4" {
   value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [module.kube-hetzner.ingress_public_ipv4]
 }

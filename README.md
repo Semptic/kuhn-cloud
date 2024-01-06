@@ -4,6 +4,19 @@ This uses [Kube-Hetzner](https://github.com/kube-hetzner/terraform-hcloud-kube-h
 
 To get started you need to copy `secrets.auto.tfvars.example` to `secrets.auto.tfvars` and fill the secrets.
 
+## Dashboards
+
+### Kubernetes Dashboard
+
+You need to create a token to get access:
+
+```sh
+kubectl -n kube-system create token admin-user
+```
+### Longhorn
+
+Bla
+
 ## Setup
 
 ## Install
@@ -45,23 +58,22 @@ export KUBECONFIG="$(pwd)/k3s_kubeconfig.yaml"
 kubectl version
 ```
 
-#### Services
+#### Setup
 
-To apply a single service use 
+To setup the base line of cluster services like monitoring, storange, etc. you need to run `setup.sh` to make sure all are setup and installed in the correct order.
+
+#### Secrets
+
+Unfortunately it's not possible to provide the secrets to all places via the kubernetes secrets. Therefore the with_secrets.sh script exists which populates the secrets correctly. The secrets have to be stored in secrets.env. Copy .secrets.env.example and fill it with the correct secrets. 
+
+Now you can create those via
+
 ```sh
-kubectl apply -k services/hello
+./with_secrets.sh apply service/hello
 ```
 
-and to apply all you can use 
+and delete them via
 
 ```sh
-for service in services/*/; do
-  kubectl apply -k $service
-done
-```
-
-You can use following to delete services
-
-```sh
-kubectl delete -k services/hello
+./with_secrets.sh delete service/hello
 ```
