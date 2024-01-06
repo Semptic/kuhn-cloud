@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - k8s.kuhn.cloud
+        - hello.k8s.kuhn.cloud
       secretName: k8s-kuhn-cloud-tls
   rules:
-    - host: k8s.kuhn.cloud
+    - host: hello.k8s.kuhn.cloud
       http:
         paths:
           - path: /
