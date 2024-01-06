@@ -12,8 +12,12 @@ locals {
       # backups = true
     },
   ]
-
 }
+
+data "http" "my_ipv4" {
+  url = "https://ipv4.icanhazip.com"
+}
+
 module "kube-hetzner" {
   providers = {
     hcloud = hcloud
@@ -92,7 +96,7 @@ module "kube-hetzner" {
   # Automatically "true" in the case of single node cluster (as it does not make sense to use the Hetzner LB in that situation).
   # It can work with any ingress controller that you choose to deploy.
   # Please note that because the klipperLB points to all nodes, we automatically allow scheduling on the control plane when it is active.
-  enable_klipper_metal_lb = "true"
+  # enable_klipper_metal_lb = true
 
   # If you want to disable the metric server set this to "false". Default is "true".
   enable_metrics_server = true
@@ -112,6 +116,33 @@ module "kube-hetzner" {
 
   # Don't create the kustomize backup. This can be helpful for automation.
   create_kustomization = false
+
+  # Allow access to the Kube API from the specified networks. The default is ["0.0.0.0/0", "::/0"].
+  # Allowed values: null (disable Kube API rule entirely) or a list of allowed networks with CIDR notation.
+  # For maximum security, it's best to disable it completely by setting it to null. However, in that case, to get access to the kube api,
+  # you would have to connect to any control plane node via SSH, as you can run kubectl from within these.
+  # Please be advised that this setting has no effect on the load balancer when the use_control_plane_lb variable is set to true. This is
+  # because firewall rules cannot be applied to load balancers yet. 
+  # TODO: Disable by default and add script to temprarily enable it for the current IP. Make sure its
+  #       automatically disabled after a while.
+  firewall_kube_api_source = ["${chomp(data.http.my_ipv4.body)}/32"]
+
+  # Allow SSH access from the specified networks. Default: ["0.0.0.0/0", "::/0"]
+  # Allowed values: null (disable SSH rule entirely) or a list of allowed networks with CIDR notation.
+  # Ideally you would set your IP there. And if it changes after cluster deploy, you can always update this variable and apply again.
+  # TODO: Disable by default and add script to temprarily enable it for the current IP. Make sure its
+  #       automatically disabled after a while.
+  firewall_ssh_source = ["${chomp(data.http.my_ipv4.body)}/32"]
+
+  # By default, we allow ICMP ping in to the nodes, to check for liveness for instance. If you do not want to allow that, you can. Just set this flag to true (false by default).
+  block_icmp_ping_in = true
+
+  # If you want to enable the Nginx ingress controller (https://kubernetes.github.io/ingress-nginx/) instead of Traefik, you can set this to "nginx". Default is "traefik".
+  # By the default we load optimal Traefik and Nginx ingress controller config for Hetzner, however you may need to tweak it to your needs, so to do,
+  # we allow you to add a traefik_values and nginx_values, see towards the end of this file in the advanced section.
+  # After the cluster is deployed, you can always use HelmChartConfig definition to tweak the configuration.
+  # If you want to disable both controllers set this to "none"
+  ingress_controller = "none"
 }
 
 terraform {

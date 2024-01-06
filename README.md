@@ -58,6 +58,8 @@ export KUBECONFIG="$(pwd)/k3s_kubeconfig.yaml"
 kubectl version
 ```
 
+You might need to rerun tofu, because for now the kube api is blocked by the firewall and only the local IP is allowed. Since it will change regularly you also need to update the ip by applying tofu agian.
+
 #### Setup
 
 To setup the base line of cluster services like monitoring, storange, etc. you need to run `setup.sh` to make sure all are setup and installed in the correct order.
