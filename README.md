@@ -33,4 +33,9 @@ tofu apply -auto-approve
 
 ### kubectl
 
-Get the config with `terraform output --raw kubeconfig > kubeconfig.yaml` and use it like `kubectl --kubeconfig kubeconfig.yaml ...`.
+Normally the kube config is created automatically. Otherwise you can get it via `terraform output --raw kubeconfig > k3s_kubeconfig.yaml`.
+
+Now you can use kubectl like this:
+```
+kubectl --kubeconfig k3s_kubeconfig.yaml ...
+```
