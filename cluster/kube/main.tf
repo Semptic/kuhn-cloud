@@ -602,7 +602,7 @@ module "kube-hetzner" {
   create_kubeconfig = true
 
   # Don't create the kustomize backup. This can be helpful for automation.
-  # create_kustomization = false
+  create_kustomization = false
 
   # MicroOS snapshot IDs to be used. Per default empty, the most recent image created using createkh will be used.
   # We recommend the default, but if you want to use specific IDs you can.
