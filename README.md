@@ -77,3 +77,52 @@ and delete them via
 ```sh
 ./with_secrets.sh delete service/hello
 ```
+
+## Development
+
+### Work with helm
+
+Use kustomize to keep helm charts as IaC (see setup/ for examples). To see the different helm chart config values you can use following or check out the `values.yaml` of the source code (in this exampe [kube-prometheus-stack/values.yaml](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml))
+
+```sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm show values prometheus-community/kube-prometheus-stack | less
+```
+
+### Useful commands
+
+#### List
+
+List all services
+```sh
+kubectl -n prometheus get services
+```
+
+List all ingress
+```sh
+kubectl -n prometheus get ingress
+```
+
+List all pods
+```sh
+kubectl -n prometheus get pods
+```
+
+If you can't find it you can normally use `--all-namespaces` instead of `-n ...` (Must be after get pods to work).
+
+#### Describe
+
+You can use describe to get more details whats going on.
+
+```sh
+kubectl -n prometheus describe ingress
+```
+
+#### Logs
+
+You can read the logs with the following command. To get the pod id use the list command from above.
+
+```sh
+kubectl -n prometheus logs <pod name>
+```
