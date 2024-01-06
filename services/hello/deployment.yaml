@@ -19,6 +19,8 @@ spec:
         labelSelector:
           matchLabels:
             app: hello
+        matchLabelKeys:
+          - pod-template-hash
       containers:
       - name: the-container
         image: nginx
