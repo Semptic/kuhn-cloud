@@ -44,10 +44,10 @@ module "kube-hetzner" {
   # ssh_port = 2222
 
   # * Your ssh public key
-  ssh_public_key = file("~/.ssh/id_ed25519.pub")
+  ssh_public_key = file("~/.ssh/kuhn-cloud_ed25519.pub")
   # * Your private key must be "ssh_private_key = null" when you want to use ssh-agent for a Yubikey-like device authentification or an SSH key-pair with a passphrase.
   # For more details on SSH see https://github.com/kube-hetzner/kube-hetzner/blob/master/docs/ssh.md
-  ssh_private_key = file("~/.ssh/id_ed25519")
+  ssh_private_key = file("~/.ssh/kuhn-cloud_ed25519")
   # You can add additional SSH public Keys to grant other team members root access to your cluster nodes.
   # ssh_additional_public_keys = []
 
@@ -586,7 +586,7 @@ module "kube-hetzner" {
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
   extra_kustomize_parameters = {
-    inwx_email : var.inwx_email,
+inwx_email : var.inwx_email,
     inwx_user : var.inwx_user,
     inwx_pass : var.inwx_pass,
     smb_user : var.smb_user,
@@ -772,28 +772,10 @@ terraform {
   }
 }
 
-output "kubeconfig" {
-  value     = module.kube-hetzner.kubeconfig
-  sensitive = true
-}
-
-output "num_control_plane_nodes" {
-  value = sum([for pool in local.control_plane_nodepools: pool.count])
-  
-}
-output "ingress_public_ipv4" {
-  value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [ module.kube-hetzner.ingress_public_ipv4 ]
-}
-
-output "ingress_public_ipv6" {
-  value = module.kube-hetzner.ingress_public_ipv6 == null ? [] : [ module.kube-hetzner.ingress_public_ipv6 ] 
-}
-
 variable "hcloud_token" {
   type      = string
   sensitive = true
 }
-
 
 variable "inwx_user" {
   type = string
@@ -812,4 +794,21 @@ variable "smb_user" {
 variable "smb_pass" {
   type      = string
   sensitive = true
+}
+
+output "kubeconfig" {
+  value     = module.kube-hetzner.kubeconfig
+  sensitive = true
+}
+
+output "num_control_plane_nodes" {
+  value = sum([for pool in local.control_plane_nodepools: pool.count])
+  
+}
+output "ingress_public_ipv4" {
+  value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [ module.kube-hetzner.ingress_public_ipv4 ]
+}
+
+output "ingress_public_ipv6" {
+  value = module.kube-hetzner.ingress_public_ipv6 == null ? [] : [ module.kube-hetzner.ingress_public_ipv6 ] 
 }
