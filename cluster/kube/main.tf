@@ -4,7 +4,7 @@ locals {
       name        = "control-plane-fsn1",
       server_type = "cax11",
       location    = "fsn1",
-      labels      = [ "svccontroller.k3s.cattle.io/enablelb=true" ],
+      labels      = ["svccontroller.k3s.cattle.io/enablelb=true"],
       taints      = [],
       count       = 3
 
@@ -586,11 +586,13 @@ module "kube-hetzner" {
 
   # Extra values that will be passed to the `extra-manifests/kustomization.yaml.tpl` if its present.
   extra_kustomize_parameters = {
-inwx_email : var.inwx_email,
+    inwx_email : var.inwx_email,
     inwx_user : var.inwx_user,
     inwx_pass : var.inwx_pass,
     smb_user : var.smb_user,
     smb_pass : var.smb_pass,
+    tailscale_client_id : var.tailscale_client_id,
+    tailscale_secret : var.tailscale_secret,
   }
 
   # See an working example for just a manifest.yaml, a HelmChart and a HelmChartConfig examples/kustomization_user_deploy/README.md
@@ -796,19 +798,28 @@ variable "smb_pass" {
   sensitive = true
 }
 
+variable "tailscale_client_id" {
+  type      = string
+  sensitive = true
+}
+variable "tailscale_secret" {
+  type      = string
+  sensitive = true
+}
+
 output "kubeconfig" {
   value     = module.kube-hetzner.kubeconfig
   sensitive = true
 }
 
 output "num_control_plane_nodes" {
-  value = sum([for pool in local.control_plane_nodepools: pool.count])
-  
+  value = sum([for pool in local.control_plane_nodepools : pool.count])
+
 }
 output "ingress_public_ipv4" {
-  value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [ module.kube-hetzner.ingress_public_ipv4 ]
+  value = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4 : [module.kube-hetzner.ingress_public_ipv4]
 }
 
 output "ingress_public_ipv6" {
-  value = module.kube-hetzner.ingress_public_ipv6 == null ? [] : [ module.kube-hetzner.ingress_public_ipv6 ] 
+  value = module.kube-hetzner.ingress_public_ipv6 == null ? [] : [module.kube-hetzner.ingress_public_ipv6]
 }

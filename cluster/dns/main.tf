@@ -3,7 +3,7 @@ resource "inwx_nameserver_record" "ipv4_record" {
   count   = var.num_ingress_public_ipv4
   # count = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? length(module.kube-hetzner.control_planes_public_ipv4) : 1
   domain  = var.domain
-  name    = var.name
+  name    = "*.${var.name}.${var.domain}"
   type    = "A"
   # content = module.kube-hetzner.ingress_public_ipv4 == module.kube-hetzner.control_planes_public_ipv4[0] ? module.kube-hetzner.control_planes_public_ipv4[count.index] : module.kube-hetzner.ingress_public_ipv4
   content = var.ingress_public_ipv4[count.index]
@@ -12,7 +12,7 @@ resource "inwx_nameserver_record" "ipv4_record" {
 resource "inwx_nameserver_record" "ipv6_record" {
   count   = var.num_ingress_public_ipv6
   domain  = var.domain
-  name    = var.name
+  name    = "*.${var.name}.${var.domain}"
   type    = "AAAA"
   content = var.ingress_public_ipv6[count.index]
 }

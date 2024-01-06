@@ -14,6 +14,9 @@ module "cluster" {
   smb_user = var.smb_user
   smb_pass = var.smb_user
 
+  tailscale_client_id = var.tailscale_client_id
+  tailscale_secret = var.tailscale_secret  
+
   domain = "kuhn.cloud"
   name   = "k8s"
 }
@@ -62,6 +65,15 @@ variable "smb_user" {
   type = string
 }
 variable "smb_pass" {
+  type      = string
+  sensitive = true
+}
+
+variable "tailscale_client_id" {
+  type     = string
+  sensitive = true
+}
+variable "tailscale_secret" {
   type      = string
   sensitive = true
 }
