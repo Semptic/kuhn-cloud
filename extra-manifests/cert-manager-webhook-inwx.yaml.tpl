@@ -3,6 +3,7 @@ apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
   name: cert-manager-webhook-inwx
+  namespace: cert-manager
 spec:
   chart: cert-manager-webhook-inwx
   targetNamespace: cert-manager
