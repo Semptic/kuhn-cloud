@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  namespace: kubernetes-dashboard
+spec:
+  defaultBackend:
+    service:
+      name: kubernetes-dashboard
+      port:
+        name: https
+  ingressClassName: tailscale
+  tls:
+  - hosts:
+    - kubernetes-dashboard

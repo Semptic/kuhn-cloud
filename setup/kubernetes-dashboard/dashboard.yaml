@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-dashboard
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kubernetes-dashboard 
+  namespace: kubernetes-dashboard
+spec:
+  chart: kubernetes-dashboard
+  repo: https://kubernetes.github.io/dashboard/
+  valuesContent: |
+    cert-manager.enabled: false
+    nginx.enabled: false
+    app.ingress.enabled: false
+
+    web.args:
+      - --enable-skip-login
+      - --disable-settings-authorizer
+      - --enable-insecure-login
+      - --insecure-bind-address=0.0.0.0
