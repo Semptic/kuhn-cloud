@@ -94,6 +94,14 @@ helm show values prometheus-community/kube-prometheus-stack | less
 
 ### Useful commands
 
+#### Delete
+
+To delete a whole namespace use:
+
+```sh
+kubectl -n monitoring delete all --all
+```
+
 #### List
 
 List all services
